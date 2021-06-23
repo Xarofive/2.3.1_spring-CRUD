@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit User</title>
+</head>
+<body>
+<h1>Edit user</h1>
+<form th:method="PATCH" th:action="@{/users/{id}(id=${user.getId()})}" th:object="${user}">
+    <label for="name">Name:</label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <p>Minimum name length is 2. Maximum is 20.</p>
+    <label for="age">Age:</label>
+    <input type="number" min="0" th:field="*{age}" id="age"/>
+    <p>Minimum age is 0.</p>
+    <input type="submit" name="submitAddition" value="Edit User"/>
+</form>
+</body>
+</html>

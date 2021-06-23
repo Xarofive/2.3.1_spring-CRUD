@@ -1,8 +1,19 @@
 package web.model;
 
+
+import javax.persistence.Entity;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
+@Entity
 public class User {
     private long id;
+
+    @Size(min = 2, max = 20)
     private String name;
+
+    @Min(value = 0)
     private int age;
 
     public User() {
