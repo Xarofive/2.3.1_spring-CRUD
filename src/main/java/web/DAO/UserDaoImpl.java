@@ -1,53 +1,56 @@
 package web.DAO;
 
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import web.model.User;
 
-import java.util.ArrayList;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Component
-public class UserDaoImpl {
+public class UserDaoImpl implements UserDao {
 
-    //временный список вместо БД
-    private List<User> userList;
-    private static long userCount;
+    //заменить на EntityManager
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    {
-        userList = new ArrayList<>();
-        userList.add(new User(++userCount, "Denis", 24));
-        userList.add(new User(++userCount, "Anna", 23));
-        userList.add(new User(++userCount, "Tobias", 2));
-    }
-
+    @Override
+    @SuppressWarnings("unchecked")
     public List<User> index() {
-        return userList;
+        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
+        return query.getResultList();
     }
 
+    @Override
     public void save(User user) {
-        userList.add(new User(++userCount, user.getName(), user.getAge()));
+        sessionFactory.getCurrentSession().save(user);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public void update(User user, int id) {
-        for (User existingUser : userList) {
-            if (existingUser.getId() == id) {
-                existingUser.setName(user.getName());
-                existingUser.setAge(user.getAge());
-            }
-        }
+        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("update User set name = :name, age = :age where id = :id");
+        query.setParameter("name", user.getName());
+        query.setParameter("age", user.getAge());
+        query.setParameter("id", id);
+        query.executeUpdate();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public User showById(int id) {
-        for (User existingUser : userList) {
-            if (existingUser.getId() == id) {
-                return existingUser;
-            }
-        }
-        return null;
+        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User where id = :id");
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public void delete(int id) {
-        userList.removeIf(existingUser -> existingUser.getId() == id);
+        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("delete from User where id = :id");
+        query.setParameter("id", id);
+        query.executeUpdate();
     }
 
 }

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import web.DAO.UserDaoImpl;
 import web.model.User;
+import web.service.UserService;
 
 import javax.validation.Valid;
 
@@ -15,15 +15,15 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 public class UsersController {
 
-    private UserDaoImpl userDaoImpl;
+    private UserService userService;
 
-    public UsersController(UserDaoImpl userDaoImpl) {
-        this.userDaoImpl = userDaoImpl;
+    public UsersController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("users", userDaoImpl.index());
+        model.addAttribute("users", userService.index());
         model.addAttribute("userToAdd", new User());
         return "users/users";
     }
@@ -35,13 +35,13 @@ public class UsersController {
             return "redirect:/users";
         }
 
-        userDaoImpl.save(user);
+        userService.save(user);
         return "redirect:/users";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
-        model.addAttribute("user", userDaoImpl.showById(id));
+        model.addAttribute("user", userService.showById(id));
         return "users/edit";
     }
 
@@ -52,13 +52,13 @@ public class UsersController {
             return "redirect:/users";
         }
 
-        userDaoImpl.update(user, id);
+        userService.update(user, id);
         return "redirect:/users";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") int id) {
-        userDaoImpl.delete(id);
+        userService.delete(id);
         return "redirect:/users";
     }
 

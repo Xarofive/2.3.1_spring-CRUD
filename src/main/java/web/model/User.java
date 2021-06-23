@@ -1,14 +1,17 @@
 package web.model;
 
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Entity
+@Table(name = "users")
 public class User {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Size(min = 2, max = 20)
     private String name;
@@ -20,7 +23,7 @@ public class User {
 
     }
 
-    public User(long id, String name, int age) {
+    public User(int id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
@@ -30,7 +33,7 @@ public class User {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
