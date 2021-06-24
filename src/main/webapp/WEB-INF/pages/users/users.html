@@ -33,7 +33,7 @@
     <input type="text" th:field="*{name}" id="name"/>
     <p>Minimum name length is 2. Maximum is 20.</p>
     <label for="age">Age:</label>
-    <input type="number" th:field="*{age}" id="age"/>
+    <input type="number" min="0" th:field="*{age}" id="age"/>
     <p>Minimum age is 0.</p>
     <input type="submit" name="submitAddition" value="Add User"/>
 </form>

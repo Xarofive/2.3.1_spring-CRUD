@@ -1,25 +1,18 @@
 package web.config;
 
-
-//Задание:
-//        1. Написать CRUD-приложение. Использовать Spring MVC + Hibernate.
-//        2. Должен быть класс User с произвольными полями (id, name и т.п.).
-//        3. В приложении должна быть страница, на которую выводятся все юзеры с возможностью добавлять, удалять и изменять юзера.
-//        4. Конфигурация Spring через JavaConfig и аннотации, по аналогии с предыдущими проектами. Без использования xml. Без Spring Boot.
-//        5. Внесите изменения в конфигурацию для работы с базой данных. Вместо SessionFactory должен использоваться EntityManager.
-//        Ссылки:
-//        https://java-master.com/spring-mvs-настройка-без-xml-web-xml/
-//        https://habr.com/ru/post/222579/
-//        https://www.baeldung.com/the-persistence-layer-with-spring-and-jpa
-
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
@@ -27,7 +20,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
-import web.model.User;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -36,12 +28,66 @@ import java.util.Properties;
 @ComponentScan("web")
 @EnableWebMvc
 @EnableTransactionManagement
+@PropertySource("classpath:db.properties")
 public class SpringConfig implements WebMvcConfigurer {
+
+
+    private Environment env;
 
     private final ApplicationContext applicationContext;
 
     public SpringConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+
+    @Autowired
+    public void setEnvironment(Environment env) {
+        this.env = env;
+    }
+
+    @Bean
+    public DataSource getDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        //dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setDriverClassName(env.getProperty("db.driver"));
+        //dataSource.setUrl("jdbc:mysql://localhost:3306/denis_crud?verifyServerCertificate=false&useSSL=false&requireSSL=false&useLegacyDatetimeCode=false&amp&serverTimezone=UTC");
+        dataSource.setUrl(env.getProperty("db.url"));
+        //dataSource.setUsername("root");
+        dataSource.setUsername(env.getProperty("db.username"));
+        //dataSource.setPassword("5982269dennisD");
+        dataSource.setPassword(env.getProperty("db.password"));
+        return dataSource;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean getEntityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+        JpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+
+        entityManagerFactory.setJpaVendorAdapter(adapter);
+        entityManagerFactory.setDataSource(getDataSource());
+        entityManagerFactory.setPersistenceUnitName("myJpaPersistenceUnit");
+        entityManagerFactory.setPackagesToScan("web.model");
+        entityManagerFactory.setJpaProperties(hibernateProperties());
+        return entityManagerFactory;
+    }
+
+    private Properties hibernateProperties() {
+        Properties properties = new Properties();
+//        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+//        properties.put("hibernate.show_sql", "true");
+//        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+        return properties;
+    }
+
+    @Bean
+    public PlatformTransactionManager getTransactionManager() {
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(getEntityManagerFactory().getObject());
+        return txManager;
     }
 
     @Bean
@@ -61,45 +107,11 @@ public class SpringConfig implements WebMvcConfigurer {
         return templateEngine;
     }
 
-
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
-    }
-
-    @Bean
-    public DataSource getDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/denis_crud?verifyServerCertificate=false&useSSL=false&requireSSL=false&useLegacyDatetimeCode=false&amp&serverTimezone=UTC");
-        dataSource.setUsername("root");
-        dataSource.setPassword("5982269dennisD");
-        return dataSource;
-    }
-
-    //заменить на EntityManager
-    @Bean
-    public LocalSessionFactoryBean getSessionFactory() {
-        LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
-        factoryBean.setDataSource(getDataSource());
-
-        Properties props = new Properties();
-        props.put("hibernate.show_sql", "true");
-        props.put("hibernate.hbm2ddl.auto", "update");
-
-        factoryBean.setHibernateProperties(props);
-        factoryBean.setAnnotatedClasses(User.class);
-        return factoryBean;
-    }
-
-    //заменить на EntityManager
-    @Bean
-    public HibernateTransactionManager getTransactionManager() {
-        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(getSessionFactory().getObject());
-        return transactionManager;
     }
 
 
