@@ -31,30 +31,19 @@ import java.util.Properties;
 @PropertySource("classpath:db.properties")
 public class SpringConfig implements WebMvcConfigurer {
 
-
+    @Autowired
     private Environment env;
 
-    private final ApplicationContext applicationContext;
-
-    public SpringConfig(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
     @Autowired
-    public void setEnvironment(Environment env) {
-        this.env = env;
-    }
+    private ApplicationContext applicationContext;
 
+    // Database related configuration
     @Bean
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        //dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setDriverClassName(env.getProperty("db.driver"));
-        //dataSource.setUrl("jdbc:mysql://localhost:3306/denis_crud?verifyServerCertificate=false&useSSL=false&requireSSL=false&useLegacyDatetimeCode=false&amp&serverTimezone=UTC");
         dataSource.setUrl(env.getProperty("db.url"));
-        //dataSource.setUsername("root");
         dataSource.setUsername(env.getProperty("db.username"));
-        //dataSource.setPassword("5982269dennisD");
         dataSource.setPassword(env.getProperty("db.password"));
         return dataSource;
     }
@@ -74,9 +63,6 @@ public class SpringConfig implements WebMvcConfigurer {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-//        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-//        properties.put("hibernate.show_sql", "true");
-//        properties.put("hibernate.hbm2ddl.auto", "update");
         properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
         properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
         properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
@@ -90,6 +76,7 @@ public class SpringConfig implements WebMvcConfigurer {
         return txManager;
     }
 
+    // View related configuration
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
@@ -113,6 +100,4 @@ public class SpringConfig implements WebMvcConfigurer {
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
     }
-
-
 }
