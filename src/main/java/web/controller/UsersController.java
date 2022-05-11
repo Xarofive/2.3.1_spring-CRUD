@@ -1,6 +1,7 @@
 package web.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 
 
 @Controller
+@Slf4j
 @RequestMapping("/users")
 public class UsersController {
 
@@ -34,6 +36,7 @@ public class UsersController {
     public String create(@ModelAttribute("userToAdd") @Valid User user, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            log.error("Ошибка в запросе");
             return "redirect:/users";
         }
 
@@ -51,6 +54,7 @@ public class UsersController {
     public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, @PathVariable("id") int id) {
 
         if (bindingResult.hasErrors()) {
+            log.error("Ошибка в запросе");
             return "redirect:/users";
         }
 

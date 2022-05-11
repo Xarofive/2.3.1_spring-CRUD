@@ -31,11 +31,15 @@ import java.util.Properties;
 @PropertySource("classpath:db.properties")
 public class SpringConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private Environment env;
+    private final Environment env;
+
+    private final ApplicationContext applicationContext;
 
     @Autowired
-    private ApplicationContext applicationContext;
+    public SpringConfig(Environment env, ApplicationContext applicationContext) {
+        this.env = env;
+        this.applicationContext = applicationContext;
+    }
 
     // Database related configuration
     @Bean
