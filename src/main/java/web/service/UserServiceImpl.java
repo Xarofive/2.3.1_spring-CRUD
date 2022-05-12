@@ -19,16 +19,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> index() {
-        List<User> users = userDao.index();
+    public List<User> getAll() {
+        List<User> users = userDao.getAll();
         log.info("Получен список всех пользователей");
         return users;
     }
 
     @Override
     @Transactional
-    public void save(User user) {
-        userDao.save(user);
+    public void create(User user) {
+        userDao.create(user);
         log.info("Пользователь с именем={} сохранен", user.getName());
     }
 
@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User showById(Long id) {
-        User user = userDao.showById(id);
+    public User get(Long id) {
+        User user = userDao.get(id);
         log.info("Пользователь с id={} найден", id);
         return user;
     }

@@ -25,7 +25,7 @@ public class UsersController {
 
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("users", userService.index());
+        model.addAttribute("users", userService.getAll());
         model.addAttribute("userToAdd", new User());
         return "users/user";
     }
@@ -38,13 +38,13 @@ public class UsersController {
             return "redirect:/user";
         }
 
-        userService.save(user);
+        userService.create(user);
         return "redirect:/user";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.showById(id));
+        model.addAttribute("user", userService.get(id));
         return "users/edit";
     }
 
