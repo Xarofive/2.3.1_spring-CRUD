@@ -19,7 +19,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public List<User> index() {
         List<User> users = userDao.index();
         log.info("Получен список всех пользователей");
@@ -41,7 +40,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public User showById(Long id) {
         User user = userDao.showById(id);
         log.info("Пользователь с id={} найден", id);
