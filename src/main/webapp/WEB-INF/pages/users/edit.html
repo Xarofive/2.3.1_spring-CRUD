@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Edit user</h1>
-<form th:method="PATCH" th:action="@{/users/{id}(id=${user.getId()})}" th:object="${user}">
+<form th:method="PATCH" th:action="@{/user/{id}(id=${user.getId()})}" th:object="${user}">
     <label for="name">Name:</label>
     <input type="text" th:field="*{name}" id="name"/>
     <p>Minimum name length is 2. Maximum is 20.</p>

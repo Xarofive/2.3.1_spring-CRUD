@@ -14,7 +14,7 @@ import javax.validation.Valid;
 
 @Controller
 @Slf4j
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UsersController {
 
     private final UserService userService;
@@ -27,7 +27,7 @@ public class UsersController {
     public String index(Model model) {
         model.addAttribute("users", userService.index());
         model.addAttribute("userToAdd", new User());
-        return "users/users";
+        return "users/user";
     }
 
     @PostMapping
@@ -35,11 +35,11 @@ public class UsersController {
 
         if (bindingResult.hasErrors()) {
             log.error("Ошибка в запросе");
-            return "redirect:/users";
+            return "redirect:/user";
         }
 
         userService.save(user);
-        return "redirect:/users";
+        return "redirect:/user";
     }
 
     @GetMapping("/{id}/edit")
@@ -53,17 +53,17 @@ public class UsersController {
 
         if (bindingResult.hasErrors()) {
             log.error("Ошибка в запросе");
-            return "redirect:/users";
+            return "redirect:/user";
         }
 
         userService.update(user, id);
-        return "redirect:/users";
+        return "redirect:/user";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
         userService.delete(id);
-        return "redirect:/users";
+        return "redirect:/user";
     }
 
 
