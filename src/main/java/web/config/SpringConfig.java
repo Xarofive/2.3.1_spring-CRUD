@@ -32,11 +32,8 @@ public class SpringConfig implements WebMvcConfigurer {
 
     private final Environment env;
 
-    private final ApplicationContext applicationContext;
-
-    public SpringConfig(Environment env, ApplicationContext applicationContext) {
+    public SpringConfig(Environment env) {
         this.env = env;
-        this.applicationContext = applicationContext;
     }
 
     // Database related configuration
@@ -82,7 +79,6 @@ public class SpringConfig implements WebMvcConfigurer {
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setApplicationContext(applicationContext);
         templateResolver.setPrefix("/WEB-INF/pages/");
         templateResolver.setSuffix(".html");
         templateResolver.setCharacterEncoding("UTF-8");
