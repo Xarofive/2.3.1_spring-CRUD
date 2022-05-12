@@ -35,14 +35,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(User user, int id) {
+    public void update(User user, Long id) {
         userDao.update(user, id);
         log.info("Пользователь с id={} обновлен", id);
     }
 
     @Override
     @Transactional
-    public User showById(int id) {
+    public User showById(Long id) {
         User user = userDao.showById(id);
         log.info("Пользователь с id={} найден", id);
         return user;
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(int id) {
+    public void delete(Long id) {
         userDao.delete(id);
         log.info("Пользователь с id={} удален", id);
     }
