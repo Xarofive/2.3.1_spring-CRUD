@@ -54,8 +54,8 @@ public class User {
         this.age = age;
     }
 
-    @java.lang.Override
-    public java.lang.String toString() {
+    @Override
+    public String toString() {
         return "User{" +
                 "id=" + id +
                 ", name=" + name +
